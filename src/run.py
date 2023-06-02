@@ -43,27 +43,27 @@ def prog(name_out,visual_mode=False,  *pics):    #visual_mode=False,
         text_gray = skimage.color.rgb2gray(text_color)
         textb = text_gray > 0.35
 
-        block_size = 45
-        adaptive_threshold = threshold_local(text_gray, block_size, offset=0.05)
+        block_size = 41 #45
+        adaptive_threshold = threshold_local(text_gray, block_size, offset=0.05)   #0.05
 
 
-        textb=text_gray>adaptive_threshold
+        textd=text_gray>adaptive_threshold
 
 
 
-        size=len(text_color[1])//120
+        size=len(text_color[1])//140
         #print(size)
         kernel_big = skimage.morphology.diamond(size)
         kernel = np.ones((5, 1), dtype=np.uint8)
-
-        textd = skimage.morphology.binary_closing(textb, kernel_big)  #erosion dilation opening closing
+        #textd = skimage.morphology.binary_erosion(textd, kernel)
+        textd = skimage.morphology.binary_closing(textd, kernel_big)  #erosion dilation opening closing
 #plt.figure()
 #plt.imshow(textd, cmap='gray')
         #plt.figure()
         #plt.imshow(textd)
-        kernel = np.ones((1, 5), dtype=np.uint8)
+        kernel = np.ones((5, 1), dtype=np.uint8)
 #kernel=skimage.morphology.diamond(3)
-        #textd = skimage.morphology.binary_dilation(textd, kernel)
+       # textd = skimage.morphology.binary_erosion(textd, kernel)
 
 
         #plt.figure()
@@ -148,7 +148,8 @@ def prog(name_out,visual_mode=False,  *pics):    #visual_mode=False,
         #plt.ylim( len(binary_image),0)
      
 
-        rozptyl=10
+        rozptyl=5
+        rozptyl=len(binary_image)//15
         pomocny=0      
         points2= points[:]
         while True:
@@ -185,7 +186,7 @@ def prog(name_out,visual_mode=False,  *pics):    #visual_mode=False,
             p=0   
             x=0             
             while True:
-                if   abs(points[x][0]-max_value[0])<rozptyl:
+                if   abs(points[x][0]-max_value[0])<rozptyl*4:
                         points.remove(points[x]) 
                         p=0
                 x=x+1  
@@ -198,7 +199,7 @@ def prog(name_out,visual_mode=False,  *pics):    #visual_mode=False,
                     pomocny=1
                     break
     
-            if math.sqrt((max_value[0] - min_value[0])**2 + (max_value[1] - min_value[1])**2)>rozptyl:
+            if math.sqrt((max_value[0] - min_value[0])**2 + (max_value[1] - min_value[1])**2)>rozptyl*3 and min_value[1]-(maxl[1]+maxp[1])/2<-rozptyl:#:-10
                 bod1+=[max_value]
                 bod2+=[min_value]
   
@@ -245,8 +246,8 @@ def prog(name_out,visual_mode=False,  *pics):    #visual_mode=False,
         '''    
     if visual_mode :
         for x in range(0,len(obr1)):            
-            plt.figure()
-            plt.imshow(obr1[x])
+           # plt.figure()
+            #plt.imshow(obr1[x])
             plt.figure()
             plt.plot([maxp1[x][0],maxl1[x][0]],[maxp1[x][1],maxl1[x][1]], linestyle='-', color='blue')
         #plt.xlim(0, len(obr1[x][0]))
